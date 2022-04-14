@@ -1,18 +1,21 @@
 package ru.yandex.practicum.catsgram.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import org.zalando.logbook.Logbook;
 import ru.yandex.practicum.catsgram.models.User;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 @RestController
 public class UserController {
     private HashSet<User> users = new HashSet<>();
+    private static final Logger log = LoggerFactory.getLogger(PostController.class);
+    Logbook logbook = Logbook.create();
 
     @GetMapping("/users")
     public HashSet<User> getAllUsers() {
+        log.debug("Количество пользователей: {}", users.size());
         return users;
     }
 
