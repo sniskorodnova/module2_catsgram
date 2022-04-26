@@ -2,55 +2,33 @@ package ru.yandex.practicum.catsgram.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.zalando.logbook.Logbook;
 import ru.yandex.practicum.catsgram.models.User;
-import java.util.HashSet;
+import ru.yandex.practicum.catsgram.service.UserService;
+import java.util.Collection;
 
 @RestController
 public class UserController {
-    private HashSet<User> users = new HashSet<>();
-    private static final Logger log = LoggerFactory.getLogger(PostController.class);
-    Logbook logbook = Logbook.create();
+    private final UserService userService;
 
-    @GetMapping("/users")
-    public HashSet<User> getAllUsers() {
-        log.debug("Количество пользователей: {}", users.size());
-        return users;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/users")
-    public void createUser(@RequestBody User user) {
-        try {
-            if (user.getEmail() == null || user.getEmail().isBlank()) {
-                throw new InvalidEmailException("Почта не может быть пустой.");
-            } else {
-                if (!users.contains(user)) {
-                    users.add(user);
-                } else {
-                    throw new UserAlreadyExistException("Пользователь с такой почтой уже существует.");
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    @GetMapping
+    public Collection<User> findAll() {
+        return userService.findAll();
     }
 
-    @PutMapping("/users")
-    public void editUser(@RequestBody User user) {
-        try {
-            if (user.getEmail() == null || user.getEmail().isBlank()) {
-                throw new InvalidEmailException("Почта не может быть пустой.");
-            } else {
-                if (!users.contains(user)) {
-                    users.add(user);
-                } else {
-                    users.remove(user);
-                    users.add(user);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    @PostMapping
+    public User createUser(@RequestBody User user) {
+        return userService.createUser(user);
+    }
+
+    @PutMapping
+    public User updateUser(@RequestBody User user) {
+        return userService.updateUser(user);
     }
 }
